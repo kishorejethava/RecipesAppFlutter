@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:recipes_app_flutter/login/model/LoginResponse.dart';
-import 'package:recipes_app_flutter/recipes/routes/RecipesRoute.Dart';
+import 'package:recipes_app_flutter/login/model/ResLogin.dart';
+import 'package:recipes_app_flutter/recipes/routes/RecipesRoute.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginWidget extends StatefulWidget {
   @override
@@ -60,7 +61,7 @@ class _LoginState extends State<LoginWidget> {
                   ),
                   SizedBox(height: 40),
                   FlatButton(
-                    color: Colors.blue,
+                    color: Theme.of(context).accentColor,
                     textColor: Colors.white,
                     disabledColor: Colors.grey,
                     disabledTextColor: Colors.black,
@@ -69,7 +70,8 @@ class _LoginState extends State<LoginWidget> {
                     onPressed: () {
                       if (_formKey.currentState.validate()) {
                         _doLogin().then((loginResponse) {
-                          Navigator.push(
+                          saveToken(loginResponse.token);
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => RecipesRoute()),
@@ -84,7 +86,7 @@ class _LoginState extends State<LoginWidget> {
     );
   }
 
-  Future<LoginResponse> _doLogin() async {
+  Future<ResLogin> _doLogin() async {
     String url = 'http://35.160.197.175:3006/api/v1/user/login';
     Map<String, String> headers = {"Content-type": "application/json"};
     Map data = {
@@ -97,11 +99,16 @@ class _LoginState extends State<LoginWidget> {
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
       // then parse the JSON.
-      return LoginResponse.fromJson(json.decode(response.body));
+      return ResLogin.fromJson(json.decode(response.body));
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
       throw Exception('Failed to load album');
     }
+  }
+
+  saveToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('token', token);
   }
 }
