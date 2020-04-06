@@ -49,23 +49,30 @@ class _RecipesRouteState extends State<RecipesRoute> {
                         imageUrl: items[index].photo ?? "",
                         placeholder: (context, url) =>
                             CircularProgressIndicator(),
-                        errorWidget: (context, url, error) => Icon(
-                          Icons.photo_album,
-                          size: 100,
+                        errorWidget: (context, url, error) => Image.asset(
+                          'assets/images/recipe_place_holder.jpg',
+                          height: 100,
+                          width: 100,
+                          fit: BoxFit.cover,
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Container(
-                              margin: EdgeInsets.all(10),
-                              child: Text(items[index].name)),
-                          Container(
-                              margin: EdgeInsets.all(10),
-                              child: Text(
-                                  "Chef : ${items[index].firstName} ${items[index].lastName}"))
-                        ],
-                      )
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                                margin: EdgeInsets.all(10),
+                                child: Text(items[index].name,
+                                    maxLines: 2,
+                                    softWrap: false,
+                                    overflow: TextOverflow.ellipsis)),
+                            Container(
+                                margin: EdgeInsets.all(10),
+                                child: Text(
+                                    "Chef : ${items[index].firstName} ${items[index].lastName}"))
+                          ],
+                        ),
+                      ),
                     ],
                   )),
             );
@@ -76,7 +83,8 @@ class _RecipesRouteState extends State<RecipesRoute> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AddRecipeScreen()),
+            MaterialPageRoute(
+                builder: (context) => AddRecipeScreen(recipe: Recipe())),
           );
         },
         child: Icon(Icons.add),

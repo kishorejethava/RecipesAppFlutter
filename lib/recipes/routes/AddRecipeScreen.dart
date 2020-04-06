@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:recipes_app_flutter/recipes/model/Recipe.dart';
 import 'package:recipes_app_flutter/recipes/model/ResAddRecipe.dart';
 import 'package:recipes_app_flutter/res/Fonts.dart' as Fonts;
 import 'dart:convert';
@@ -9,7 +10,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddRecipeScreen extends StatefulWidget {
-  
+  final Recipe recipe;
+
+  AddRecipeScreen({Key key, @required this.recipe}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => _AddRecipeScreenState();
 }
@@ -19,17 +23,22 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
   final servesController = TextEditingController();
   final linkController = TextEditingController();
   final prepareTimeController = TextEditingController();
-  final complexityController = TextEditingController();
   final tagController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   String dropdownValue = '';
-  List<String> _dynamicChips;
+  List<String> _dynamicChips = [];
   File imageFile;
 
   @override
   void initState() {
     super.initState();
-    _dynamicChips = [];
+    /* nameController..text = widget.recipe != null ? widget.recipe.name : '';
+    servesController..text = widget.recipe != null ? widget.recipe.serves : '';
+    linkController..text = widget.recipe != null ? widget.recipe.ytUrl : '';
+    prepareTimeController
+      ..text = widget.recipe != null ? widget.recipe.preparationTime : '';
+    dropdownValue = widget.recipe != null ? widget.recipe.complexity : '';
+    _setMetaTags(); */
   }
 
   @override
@@ -52,8 +61,6 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
               child: Column(children: <Widget>[
                 GestureDetector(
                   child: Container(
-                    alignment: Alignment(0.0, 0.0),
-                    color: Colors.red,
                     child: AspectRatio(
                       aspectRatio: 16 / 9,
                       child: _decideImageView(),
@@ -206,10 +213,9 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
         fit: BoxFit.cover,
       );
     } else {
-      return Text(
-        'Add Image',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontFamily: Fonts.Metropolis_Regular),
+      return Image.asset(
+        'assets/images/recipe_place_holder.jpg',
+        fit: BoxFit.cover,
       );
     }
   }
@@ -292,21 +298,29 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
   }
 
   Future<ResAddRecipe> addUpdateRecipePhoto(int id) async {
-    String url =
-        'http://35.160.197.175:3006/api/v1/recipe/add-update-recipe-photo';
-    Map<String, String> headers = {"Content-type": "application/json"};
-    Map data = {'recipeId': id, 'photo': imageFile};
-    final response =
-        await http.post(url, headers: headers, body: json.encode(data));
+    var uri = Uri.parse(
+        'http://35.160.197.175:3006/api/v1/recipe/add-update-recipe-photo');
+    var request = http.MultipartRequest('POST', uri);
+    request.fields['recipeId'] = id.toString();
+    request.files.add(
+        http.MultipartFile.fromBytes("image", await imageFile.readAsBytes()));
+    var response = await request.send();
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
       // then parse the JSON.
-      return ResAddRecipe.fromJson(json.decode(response.body));
+      // return ResAddRecipe.fromJson(json.decode(response.body));
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
       throw Exception('Failed to load album');
+    }
+  }
+
+  void _setMetaTags() {
+    if (widget.recipe != null) {
+      for (MetaTag metaTag in widget.recipe.metaTags)
+        _dynamicChips.add(metaTag.tag);
     }
   }
 }
