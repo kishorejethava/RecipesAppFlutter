@@ -7,7 +7,7 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="recipes_app_flutter"
+        android:label="Recipo"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

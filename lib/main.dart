@@ -7,6 +7,10 @@ void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+
+  final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,13 +27,9 @@ class MyApp extends StatelessWidget {
 
         // Define the default TextTheme. Use this to specify the default
         // text styling for headlines, titles, bodies of text, and more.
-        textTheme: TextTheme(
-          headline: TextStyle(fontSize: 72.0, fontWeight: FontWeight.normal),
-          title: TextStyle(fontSize: 36.0, fontStyle: FontStyle.normal),
-          body1: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
-        ),
       ),
       home: SplashScreen(),
+      navigatorObservers: <NavigatorObserver>[routeObserver],
     );
   }
 }

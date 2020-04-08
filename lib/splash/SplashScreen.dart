@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:recipes_app_flutter/home/HomeScreen.dart';
 import 'package:recipes_app_flutter/login/LoginWidget.dart';
 import 'package:recipes_app_flutter/recipes/routes/RecipesRoute.dart';
 import 'package:recipes_app_flutter/res/Fonts.dart' as Fonts;
@@ -87,7 +88,7 @@ class _SplashScreenState extends State<SplashScreen> {
     }else{
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => RecipesRoute()),
+        MaterialPageRoute(builder: (context) => HomeScreen()),
       );
     }
   }

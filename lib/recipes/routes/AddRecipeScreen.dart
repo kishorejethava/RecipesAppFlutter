@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:recipes_app_flutter/recipes/model/Recipe.dart';
 import 'package:recipes_app_flutter/recipes/model/ResAddRecipe.dart';
 import 'package:recipes_app_flutter/res/Fonts.dart' as Fonts;
@@ -8,6 +10,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http_parser/http_parser.dart';
 
 class AddRecipeScreen extends StatefulWidget {
   final Recipe recipe;
@@ -28,6 +31,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
   String dropdownValue = '';
   List<String> _dynamicChips = [];
   File imageFile;
+  var isSubmiting = false;
 
   @override
   void initState() {
@@ -167,23 +171,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
                 SizedBox(height: 10),
                 dynamicChips(),
                 SizedBox(height: 40),
-                FlatButton(
-                  color: Theme.of(context).accentColor,
-                  textColor: Colors.white,
-                  disabledColor: Colors.grey,
-                  disabledTextColor: Colors.black,
-                  padding: const EdgeInsets.fromLTRB(40.0, 16.0, 40.0, 16.0),
-                  splashColor: Colors.redAccent,
-                  onPressed: () {
-                    if (_formKey.currentState.validate()) {
-                      addRecipe().then((resAddRecipe) {
-                        debugPrint("resAddRecipe:" + resAddRecipe.toString());
-                        // addUpdateRecipePhoto(resAddRecipe.id);
-                      });
-                    }
-                  },
-                  child: Text("Submit", style: TextStyle(fontSize: 14.0)),
-                )
+                getSubmitOrProgress(),
               ]),
             )),
       ),
@@ -297,22 +285,60 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
     }
   }
 
-  Future<ResAddRecipe> addUpdateRecipePhoto(int id) async {
-    var uri = Uri.parse(
-        'http://35.160.197.175:3006/api/v1/recipe/add-update-recipe-photo');
-    var request = http.MultipartRequest('POST', uri);
-    request.fields['recipeId'] = id.toString();
-    request.files.add(
-        http.MultipartFile.fromBytes("image", await imageFile.readAsBytes()));
-    var response = await request.send();
+  addUpdateRecipePhoto(int id) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token') ?? '';
+    var dio = Dio();
+    String fileName = imageFile.path.split('/').last;
+    FormData formData = FormData.fromMap({
+      "recipeId": id.toString(),
+      "photo": await MultipartFile.fromFile(
+        imageFile.path,
+        filename: fileName,
+        contentType: new MediaType("image", "jpeg"),
+      ),
+    });
+
+    var response = await dio.post(
+      "http://35.160.197.175:3006/api/v1/recipe/add-update-recipe-photo",
+      data: formData,
+      options: Options(
+        headers: {"Authorization": token},
+      ),
+      onSendProgress: (int sent, int total) {
+        debugPrint("sent${(sent / total * 100) / 100}");
+        setState(() {
+          // _progressValue = sent / total * 100;
+        });
+      },
+    ).whenComplete(() {
+      setState(() {
+        imageFile = imageFile;
+        isSubmiting = false;
+        Navigator.of(context).pop();
+      });
+    }).catchError((onError) {
+      debugPrint("error:${onError.toString()}");
+    });
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
       // then parse the JSON.
-      // return ResAddRecipe.fromJson(json.decode(response.body));
+      // return ResUploadPhoto.fromJson(json.decode(response.body));
+      debugPrint("complete:${response.data.toString()}");
+      Fluttertoast.showToast(
+        msg: "Uploaded!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
+      debugPrint("Response upload photo: $response");
       throw Exception('Failed to load album');
     }
   }
@@ -321,6 +347,40 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
     if (widget.recipe != null) {
       for (MetaTag metaTag in widget.recipe.metaTags)
         _dynamicChips.add(metaTag.tag);
+    }
+  }
+
+  Widget getSubmitOrProgress() {
+    if (!isSubmiting) {
+      return FlatButton(
+        color: Theme.of(context).accentColor,
+        textColor: Colors.white,
+        disabledColor: Colors.grey,
+        disabledTextColor: Colors.black,
+        padding: const EdgeInsets.fromLTRB(40.0, 16.0, 40.0, 16.0),
+        splashColor: Colors.redAccent,
+        onPressed: () {
+          if (_formKey.currentState.validate()) {
+            isSubmiting = true;
+            addRecipe().then((resAddRecipe) {
+              debugPrint("resAddRecipe:" + resAddRecipe.toString());
+              if (imageFile != null) {
+                addUpdateRecipePhoto(resAddRecipe.id);
+              } else {
+                isSubmiting = false;
+                Navigator.of(context).pop();
+              }
+            });
+          }
+        },
+        child: Text("Submit", style: TextStyle(fontSize: 14.0)),
+      );
+    } else {
+      return CircularProgressIndicator(
+        backgroundColor: Colors.white,
+        valueColor:
+            AlwaysStoppedAnimation<Color>(Theme.of(context).accentColor),
+      );
     }
   }
 }

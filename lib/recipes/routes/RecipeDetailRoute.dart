@@ -9,7 +9,6 @@ import 'package:recipes_app_flutter/recipes/model/Recipe.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
-import 'package:recipes_app_flutter/recipes/model/ResUploadPhoto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:recipes_app_flutter/res/Fonts.dart' as Fonts;
 import 'package:http_parser/http_parser.dart';
@@ -179,8 +178,7 @@ class _RecipeDetailState extends State<RecipeDetailRoute> {
         height: 100,
         width: 100,
         imageUrl: recipe.photo ?? "",
-        placeholder: (context, url) => CircularProgressIndicator(),
-        errorWidget: (context, url, error) => Image.asset(
+        placeholder: (context, url) => Image.asset(
           'assets/images/recipe_place_holder.jpg',
           height: 100,
           width: 100,

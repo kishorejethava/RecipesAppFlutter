@@ -32,6 +32,9 @@ dependencies:
   fluttertoast: ^4.0.1
   mime: ^0.9.6+3
   dio: ^3.0.9
+  shimmer: ^1.0.0
+  pk_skeleton: ^0.0.2
+  curved_navigation_bar: ^0.3.2
 
 
 dev_dependencies:

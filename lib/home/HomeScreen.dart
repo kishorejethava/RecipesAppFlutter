@@ -8,16 +8,18 @@ import 'package:recipes_app_flutter/recipes/model/Recipe.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:recipes_app_flutter/recipes/model/RecipeList.dart';
+import 'package:recipes_app_flutter/recipes/routes/AddRecipeScreen.dart';
 import 'package:recipes_app_flutter/recipes/routes/RecipeDetailRoute.dart';
+import 'package:recipes_app_flutter/recipes/routes/RecipesRoute.dart';
 import 'package:recipes_app_flutter/settings/SettingsScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class RecipesRoute extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _RecipesRouteState();
+  State<StatefulWidget> createState() => _HomeScreenState();
 }
 
-class _RecipesRouteState extends State<RecipesRoute> with RouteAware {
+class _HomeScreenState extends State<HomeScreen> with RouteAware {
   List<Recipe> items = [];
   int currentTab = 0;
   final List<Widget> screens = [
@@ -27,29 +29,64 @@ class _RecipesRouteState extends State<RecipesRoute> with RouteAware {
     SettingsScreen(),
   ];
 
-  Widget currentScreen = RecipesRoute();
   final PageStorageBucket bucket = PageStorageBucket();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Recipes'),
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () {
-                showSearch(
-                    context: context,
-                    delegate: FeedSearchDelegate(items: items));
-              })
-        ],
-      ),
-      body: Container(
+      // appBar: AppBar(title: Text('Recipes')),
+      body: IndexedStack(
+    index: currentTab,
+    children: screens,
+  )/* Container(
         padding: EdgeInsets.all(12.0),
         margin: EdgeInsets.all(4.0),
         color: CupertinoColors.extraLightBackgroundGray,
         child: buildListView(),
+      ) */,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => AddRecipeScreen(recipe: Recipe())),
+          );
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Theme.of(context).accentColor,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      bottomNavigationBar: /* BottomNavigationBar(
+        currentIndex: currentTab,
+        onTap: (index) {
+          setState(() {
+            currentTab = index;
+          });
+        }, // this will be set when a new tab is tapped
+        items: [
+          BottomNavigationBarItem(
+            icon: new Icon(Icons.home),
+            title: new Text('Home'),
+            
+          ),
+          BottomNavigationBarItem(
+            icon: new Icon(Icons.mail),
+            title: new Text('Messages'),
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.person), title: Text('Profile'))
+        ],
+      ) */
+      BottomAppBar(
+        clipBehavior: Clip.antiAlias,
+        shape: CircularNotchedRectangle(),
+        child: Container(
+          height: 60,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: buildChildBottomBar(),
+          ),
+        ),
       ),
     );
   }
@@ -150,6 +187,119 @@ class _RecipesRouteState extends State<RecipesRoute> with RouteAware {
       );
     }
   }
+
+  buildChildBottomBar() {
+    return <Widget>[
+      Row(
+        children: <Widget>[
+          MaterialButton(
+            minWidth: 40,
+            onPressed: () {
+              setState(() {
+                if (currentTab != 0) {
+                  currentTab = 0;
+                }
+              });
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(Icons.rss_feed,
+                    color: currentTab == 0
+                        ? Theme.of(context).accentColor
+                        : Colors.grey),
+                Text(
+                  'Feed',
+                  style: TextStyle(
+                      color: currentTab == 0
+                          ? Theme.of(context).accentColor
+                          : Colors.grey),
+                )
+              ],
+            ),
+          ),
+          MaterialButton(
+            minWidth: 40,
+            onPressed: () {
+              setState(() {
+                if (currentTab != 1) {
+                  currentTab = 1;
+                }
+              });
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(Icons.favorite,
+                    color: currentTab == 1
+                        ? Theme.of(context).accentColor
+                        : Colors.grey),
+                Text(
+                  'Favorites',
+                  style: TextStyle(
+                      color: currentTab == 1
+                          ? Theme.of(context).accentColor
+                          : Colors.grey),
+                )
+              ],
+            ),
+          ),
+          MaterialButton(
+            minWidth: 40,
+            onPressed: () {
+              setState(() {
+                if (currentTab != 2) {
+                  currentTab = 2;
+                }
+              });
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(Icons.account_circle,
+                    color: currentTab == 2
+                        ? Theme.of(context).accentColor
+                        : Colors.grey),
+                Text(
+                  'Profile',
+                  style: TextStyle(
+                      color: currentTab == 2
+                          ? Theme.of(context).accentColor
+                          : Colors.grey),
+                )
+              ],
+            ),
+          ),
+          MaterialButton(
+            minWidth: 40,
+            onPressed: () {
+              setState(() {
+                if (currentTab != 3) {
+                  currentTab = 3;
+                }
+              });
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(Icons.settings,
+                    color: currentTab == 3
+                        ? Theme.of(context).accentColor
+                        : Colors.grey),
+                Text(
+                  'Settings',
+                  style: TextStyle(
+                      color: currentTab == 3
+                          ? Theme.of(context).accentColor
+                          : Colors.grey),
+                )
+              ],
+            ),
+          ),
+        ],
+      )
+    ];
+  }
 }
 
 typedef void Callback(String val);
@@ -206,57 +356,6 @@ class ListItem extends StatelessWidget {
               ),
             ],
           )),
-    );
-  }
-}
-
-class FeedSearchDelegate extends SearchDelegate<String> {
-  List<Recipe> items = [];
-
-  FeedSearchDelegate({Key key, @required this.items});
-
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-          icon: Icon(Icons.clear),
-          onPressed: () {
-            query = '';
-          })
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-        icon: AnimatedIcon(
-          icon: AnimatedIcons.menu_arrow,
-          progress: transitionAnimation,
-        ),
-        onPressed: () {
-          close(context, null);
-        });
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    return null;
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    final suggestions = query.isEmpty  ? items : items.where((p) => p.name.toLowerCase().contains(query)).toList();
-    return Container(
-      padding: EdgeInsets.all(12.0),
-      margin: EdgeInsets.all(4.0),
-      color: CupertinoColors.extraLightBackgroundGray,
-      child: ListView.builder(
-        itemCount: suggestions.length,
-        itemBuilder: (context, index) => ListItem(
-          index: index,
-          recipe: suggestions[index],
-        ),
-      ),
     );
   }
 }
