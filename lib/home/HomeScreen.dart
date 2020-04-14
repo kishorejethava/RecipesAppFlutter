@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pk_skeleton/pk_skeleton.dart';
-import 'package:recipes_app_flutter/favorites/FavoritesScreen.dart';
+import 'package:recipes_app_flutter/favorites/FavoriteRecipesScreen.dart';
 import 'package:recipes_app_flutter/profile/ProfileScreen.dart';
 import 'package:recipes_app_flutter/recipes/model/Recipe.dart';
 import 'package:http/http.dart' as http;
@@ -24,8 +24,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   int currentTab = 0;
   final List<Widget> screens = [
     RecipesRoute(),
+    FavoriteRecipesScreen(),
     ProfileScreen(),
-    FavoriteScreen(),
     SettingsScreen(),
   ];
 

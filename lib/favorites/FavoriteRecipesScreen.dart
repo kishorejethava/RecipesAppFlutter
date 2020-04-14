@@ -1,29 +1,27 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pk_skeleton/pk_skeleton.dart';
 import 'package:recipes_app_flutter/recipes/model/Recipe.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:recipes_app_flutter/recipes/model/RecipeList.dart';
 import 'package:recipes_app_flutter/recipes/routes/RecipeDetailRoute.dart';
-import 'package:recipes_app_flutter/utils/model/ResMessage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class RecipesRoute extends StatefulWidget {
+class FavoriteRecipesScreen extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _RecipesRouteState();
+  State<StatefulWidget> createState() => _FavoriteRecipesScreenState();
 }
 
-class _RecipesRouteState extends State<RecipesRoute> with RouteAware {
+class _FavoriteRecipesScreenState extends State<FavoriteRecipesScreen> with RouteAware {
   List<Recipe> items = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Recipes'),
+        title: Text('Cooking List'),
         actions: <Widget>[
           IconButton(
               icon: Icon(Icons.search),
@@ -86,7 +84,7 @@ class _RecipesRouteState extends State<RecipesRoute> with RouteAware {
   Future<RecipeList> getRecipes() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token') ?? '';
-    String url = 'http://35.160.197.175:3006/api/v1/recipe/feeds';
+    String url = 'http://35.160.197.175:3006/api/v1/recipe/cooking-list';
     Map<String, String> headers = {
       "Content-type": "application/json",
       "Authorization": token
@@ -119,23 +117,16 @@ class _RecipesRouteState extends State<RecipesRoute> with RouteAware {
       return RefreshIndicator(
           child: ListView.builder(
             itemCount: items.length,
-            itemBuilder: (context, index) => Dismissible(
-              key: UniqueKey(),
-              direction: DismissDirection.endToStart,
-              onDismissed: (DismissDirection direction) {
-                removeRecipe(index);
-              },
-              child: ListItem(
-                  index: index,
-                  recipe: items[index],
-                  callback: (val) {
-                    getRecipes().then((onValue) {
-                      setState(() {
-                        items = onValue.recipeList;
-                      });
+            itemBuilder: (context, index) => ListItem(
+                index: index,
+                recipe: items[index],
+                callback: (val) {
+                  getRecipes().then((onValue) {
+                    setState(() {
+                      items = onValue.recipeList;
                     });
-                  }),
-            ),
+                  });
+                }),
           ),
           onRefresh: _refresh);
     } else {
@@ -144,37 +135,6 @@ class _RecipesRouteState extends State<RecipesRoute> with RouteAware {
         isBottomLinesActive: false,
         length: 10,
       );
-    }
-  }
-
-  removeRecipe(var index) async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token') ?? '';
-    String url =
-        'http://35.160.197.175:3006/api/v1/recipe/${items[index].recipeId}';
-    Map<String, String> headers = {
-      "Content-type": "application/json",
-      "Authorization": token
-    };
-    final response = await http.delete(url, headers: headers);
-
-    if (response.statusCode == 200) {
-      setState(() {
-        this.items.removeAt(index);
-      });
-      Fluttertoast.showToast(
-        msg: ResMessage.fromJson(json.decode(response.body)).msg,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-    } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
-      throw Exception('Failed to load album');
     }
   }
 }
@@ -272,23 +232,16 @@ class FeedSearchDelegate extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final suggestions = query.isEmpty
-        ? items
-        : items.where((p) => p.name.toLowerCase().contains(query)).toList();
+    final suggestions = query.isEmpty  ? items : items.where((p) => p.name.toLowerCase().contains(query)).toList();
     return Container(
       padding: EdgeInsets.all(12.0),
       margin: EdgeInsets.all(4.0),
       color: CupertinoColors.extraLightBackgroundGray,
       child: ListView.builder(
         itemCount: suggestions.length,
-        itemBuilder: (context, index) => Dismissible(
-          key: UniqueKey(),
-          direction: DismissDirection.endToStart,
-          onDismissed: (DismissDirection direction) {},
-          child: ListItem(
-            index: index,
-            recipe: suggestions[index],
-          ),
+        itemBuilder: (context, index) => ListItem(
+          index: index,
+          recipe: suggestions[index],
         ),
       ),
     );
