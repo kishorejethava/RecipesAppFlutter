@@ -438,7 +438,8 @@ class _RecipeDetailState extends State<RecipeDetailScreen> {
       "Authorization": token
     };
     final Map data = {'comment': commentEditingController.text};
-    final response = await http.post(url, headers: headers, body: json.encode(data));
+    final response =
+        await http.post(url, headers: headers, body: json.encode(data));
 
     if (response.statusCode == 200) {
       commentEditingController.clear();
@@ -755,14 +756,17 @@ class IngredientItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Padding(
-            padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-            child: Text(
-              ingredient.value,
-              style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black,
-                  fontFamily: Fonts.Metropolis_Regular),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+              child: Text(
+                ingredient.value,
+                overflow: TextOverflow.visible,
+                style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black,
+                    fontFamily: Fonts.Metropolis_Regular),
+              ),
             ),
           ),
           IconButton(

@@ -1,7 +1,5 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pk_skeleton/pk_skeleton.dart';
 import 'package:recipes_app_flutter/favorites/FavoriteRecipesScreen.dart';
 import 'package:recipes_app_flutter/profile/ProfileScreen.dart';
 import 'package:recipes_app_flutter/recipes/model/Recipe.dart';
@@ -9,7 +7,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:recipes_app_flutter/recipes/model/RecipeList.dart';
 import 'package:recipes_app_flutter/recipes/routes/AddRecipeScreen.dart';
-import 'package:recipes_app_flutter/recipes/routes/RecipeDetailScreen.dart';
 import 'package:recipes_app_flutter/recipes/routes/RecipesScreen.dart';
 import 'package:recipes_app_flutter/settings/SettingsScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,14 +33,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     return Scaffold(
       // appBar: AppBar(title: Text('Recipes')),
       body: IndexedStack(
-    index: currentTab,
-    children: screens,
-  )/* Container(
-        padding: EdgeInsets.all(12.0),
-        margin: EdgeInsets.all(4.0),
-        color: CupertinoColors.extraLightBackgroundGray,
-        child: buildListView(),
-      ) */,
+        index: currentTab,
+        children: screens,
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
@@ -56,7 +48,8 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
         backgroundColor: Theme.of(context).accentColor,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      bottomNavigationBar: /* BottomNavigationBar(
+      bottomNavigationBar:
+          /* BottomNavigationBar(
         currentIndex: currentTab,
         onTap: (index) {
           setState(() {
@@ -77,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
               icon: Icon(Icons.person), title: Text('Profile'))
         ],
       ) */
-      BottomAppBar(
+          BottomAppBar(
         clipBehavior: Clip.antiAlias,
         shape: CircularNotchedRectangle(),
         child: Container(
@@ -113,22 +106,18 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
 
   // Called when the top route has been popped off, and the current route shows up.
   void didPopNext() {
-    debugPrint("didPopNext ${runtimeType}");
   }
 
   // Called when the current route has been pushed.
   void didPush() {
-    debugPrint("didPush ${runtimeType}");
   }
 
   // Called when the current route has been popped off.
   void didPop() {
-    debugPrint("didPop ${runtimeType}");
   }
 
   // Called when a new route has been pushed, and the current route is no longer visible.
   void didPushNext() {
-    debugPrint("didPushNext ${runtimeType}");
   }
 
   Future<RecipeList> getRecipes() async {
@@ -151,40 +140,6 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
       // If the server did not return a 200 OK response,
       // then throw an exception.
       throw Exception('Failed to load album');
-    }
-  }
-
-  Future<void> _refresh() {
-    return getRecipes().then((onValue) {
-      setState(() {
-        items = onValue.recipeList;
-      });
-    });
-  }
-
-  buildListView() {
-    if (items.length > 0) {
-      return RefreshIndicator(
-          child: ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) => ListItem(
-                index: index,
-                recipe: items[index],
-                callback: (val) {
-                  getRecipes().then((onValue) {
-                    setState(() {
-                      items = onValue.recipeList;
-                    });
-                  });
-                }),
-          ),
-          onRefresh: _refresh);
-    } else {
-      PKCardListSkeleton(
-        isCircularImage: true,
-        isBottomLinesActive: false,
-        length: 10,
-      );
     }
   }
 
@@ -299,63 +254,5 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
         ],
       )
     ];
-  }
-}
-
-typedef void Callback(String val);
-
-class ListItem extends StatelessWidget {
-  final int index;
-  final Recipe recipe;
-  final Callback callback;
-
-  const ListItem({Key key, this.index, this.recipe, this.callback});
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: InkWell(
-          borderRadius: BorderRadius.circular(2),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      RecipeDetailScreen(recipeId: recipe.recipeId)),
-            ).then((onValue) {});
-          },
-          child: Row(
-            children: <Widget>[
-              CachedNetworkImage(
-                fit: BoxFit.cover,
-                height: 100,
-                width: 100,
-                imageUrl: recipe.photo ?? "",
-                placeholder: (context, url) => Image.asset(
-                  'assets/images/recipe_place_holder.jpg',
-                  height: 100,
-                  width: 100,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              Flexible(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                        margin: EdgeInsets.all(10),
-                        child: Text(recipe.name,
-                            maxLines: 2,
-                            softWrap: false,
-                            overflow: TextOverflow.ellipsis)),
-                    Container(
-                        margin: EdgeInsets.all(10),
-                        child: Text(
-                            "Chef : ${recipe.firstName} ${recipe.lastName}"))
-                  ],
-                ),
-              ),
-            ],
-          )),
-    );
   }
 }

@@ -65,22 +65,18 @@ class _RecipesRouteState extends State<RecipesScreen> with RouteAware {
 
   // Called when the top route has been popped off, and the current route shows up.
   void didPopNext() {
-    debugPrint("didPopNext ${runtimeType}");
   }
 
   // Called when the current route has been pushed.
   void didPush() {
-    debugPrint("didPush ${runtimeType}");
   }
 
   // Called when the current route has been popped off.
   void didPop() {
-    debugPrint("didPop ${runtimeType}");
   }
 
   // Called when a new route has been pushed, and the current route is no longer visible.
   void didPushNext() {
-    debugPrint("didPushNext ${runtimeType}");
   }
 
   Future<RecipeList> getRecipes() async {

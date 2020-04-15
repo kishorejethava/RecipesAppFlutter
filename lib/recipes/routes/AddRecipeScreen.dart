@@ -213,7 +213,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Take aaction!'),
+            title: Text('Take a action!'),
             content: SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
@@ -340,13 +340,6 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
       // then throw an exception.
       debugPrint("Response upload photo: $response");
       throw Exception('Failed to load album');
-    }
-  }
-
-  void _setMetaTags() {
-    if (widget.recipe != null) {
-      for (MetaTag metaTag in widget.recipe.metaTags)
-        _dynamicChips.add(metaTag.tag);
     }
   }
 

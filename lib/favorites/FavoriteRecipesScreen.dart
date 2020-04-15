@@ -6,7 +6,7 @@ import 'package:recipes_app_flutter/recipes/model/Recipe.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:recipes_app_flutter/recipes/model/RecipeList.dart';
-import 'package:recipes_app_flutter/recipes/routes/RecipeDetailScreen.dart';
+import 'package:recipes_app_flutter/recipes/routes/HomeRecipeDetailScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FavoriteRecipesScreen extends StatefulWidget {
@@ -14,7 +14,8 @@ class FavoriteRecipesScreen extends StatefulWidget {
   State<StatefulWidget> createState() => _FavoriteRecipesScreenState();
 }
 
-class _FavoriteRecipesScreenState extends State<FavoriteRecipesScreen> with RouteAware {
+class _FavoriteRecipesScreenState extends State<FavoriteRecipesScreen>
+    with RouteAware {
   List<Recipe> items = [];
 
   @override
@@ -63,22 +64,18 @@ class _FavoriteRecipesScreenState extends State<FavoriteRecipesScreen> with Rout
 
   // Called when the top route has been popped off, and the current route shows up.
   void didPopNext() {
-    debugPrint("didPopNext ${runtimeType}");
   }
 
   // Called when the current route has been pushed.
   void didPush() {
-    debugPrint("didPush ${runtimeType}");
   }
 
   // Called when the current route has been popped off.
   void didPop() {
-    debugPrint("didPop ${runtimeType}");
   }
 
   // Called when a new route has been pushed, and the current route is no longer visible.
   void didPushNext() {
-    debugPrint("didPushNext ${runtimeType}");
   }
 
   Future<RecipeList> getRecipes() async {
@@ -156,8 +153,11 @@ class ListItem extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      RecipeDetailScreen(recipeId: recipe.recipeId)),
+                  builder: (context) => HomeRecipeDetailScreen(
+                        recipeId: recipe.recipeId,
+                        recipeName: recipe.name,
+                        tag: 'recipe$index',
+                      )),
             ).then((onValue) {});
           },
           child: Row(
@@ -232,7 +232,9 @@ class FeedSearchDelegate extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final suggestions = query.isEmpty  ? items : items.where((p) => p.name.toLowerCase().contains(query)).toList();
+    final suggestions = query.isEmpty
+        ? items
+        : items.where((p) => p.name.toLowerCase().contains(query)).toList();
     return Container(
       padding: EdgeInsets.all(12.0),
       margin: EdgeInsets.all(4.0),

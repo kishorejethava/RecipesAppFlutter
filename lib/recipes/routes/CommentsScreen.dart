@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -10,7 +9,6 @@ import 'package:recipes_app_flutter/recipes/model/CommentList.dart';
 import 'package:recipes_app_flutter/utils/model/ResMessage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'package:recipes_app_flutter/res/Fonts.dart' as Fonts;
 
 class CommentsScreen extends StatefulWidget {
   final recipeId;
