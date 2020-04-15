@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:recipes_app_flutter/home/HomeScreen.dart';
-import 'package:recipes_app_flutter/login/LoginWidget.dart';
-import 'package:recipes_app_flutter/recipes/routes/RecipesRoute.dart';
+import 'package:recipes_app_flutter/login/LoginScreen.dart';
 import 'package:recipes_app_flutter/res/Fonts.dart' as Fonts;
 import 'package:recipes_app_flutter/res/ZigZagClipper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -83,7 +82,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (token.isEmpty) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => LoginWidget()),
+        MaterialPageRoute(builder: (context) => LoginScreen()),
       );
     }else{
       Navigator.pushReplacement(

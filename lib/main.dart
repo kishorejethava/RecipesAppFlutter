@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:recipes_app_flutter/login/LoginWidget.dart';
 import 'package:recipes_app_flutter/res/Fonts.dart' as Fonts;
 import 'package:recipes_app_flutter/splash/SplashScreen.dart';
 

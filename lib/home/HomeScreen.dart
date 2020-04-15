@@ -9,8 +9,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:recipes_app_flutter/recipes/model/RecipeList.dart';
 import 'package:recipes_app_flutter/recipes/routes/AddRecipeScreen.dart';
-import 'package:recipes_app_flutter/recipes/routes/RecipeDetailRoute.dart';
-import 'package:recipes_app_flutter/recipes/routes/RecipesRoute.dart';
+import 'package:recipes_app_flutter/recipes/routes/RecipeDetailScreen.dart';
+import 'package:recipes_app_flutter/recipes/routes/RecipesScreen.dart';
 import 'package:recipes_app_flutter/settings/SettingsScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   List<Recipe> items = [];
   int currentTab = 0;
   final List<Widget> screens = [
-    RecipesRoute(),
+    RecipesScreen(),
     FavoriteRecipesScreen(),
     ProfileScreen(),
     SettingsScreen(),
@@ -320,7 +320,7 @@ class ListItem extends StatelessWidget {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      RecipeDetailRoute(recipeId: recipe.recipeId)),
+                      RecipeDetailScreen(recipeId: recipe.recipeId)),
             ).then((onValue) {});
           },
           child: Row(

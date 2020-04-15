@@ -6,7 +6,7 @@ import 'package:recipes_app_flutter/recipes/model/Recipe.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:recipes_app_flutter/recipes/model/RecipeList.dart';
-import 'package:recipes_app_flutter/recipes/routes/RecipeDetailRoute.dart';
+import 'package:recipes_app_flutter/recipes/routes/RecipeDetailScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FavoriteRecipesScreen extends StatefulWidget {
@@ -157,7 +157,7 @@ class ListItem extends StatelessWidget {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      RecipeDetailRoute(recipeId: recipe.recipeId)),
+                      RecipeDetailScreen(recipeId: recipe.recipeId)),
             ).then((onValue) {});
           },
           child: Row(

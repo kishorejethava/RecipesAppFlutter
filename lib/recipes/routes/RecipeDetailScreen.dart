@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
-import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:recipes_app_flutter/recipes/model/Recipe.dart';
@@ -14,26 +13,28 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:recipes_app_flutter/res/Fonts.dart' as Fonts;
 import 'package:http_parser/http_parser.dart';
 
-class RecipeDetailRoute extends StatefulWidget {
+class RecipeDetailScreen extends StatefulWidget {
   final recipeId;
+  final tag;
 
-  RecipeDetailRoute({Key key, @required this.recipeId}) : super(key: key);
+  RecipeDetailScreen({Key key, @required this.recipeId, @required this.tag})
+      : super(key: key);
   @override
   State<StatefulWidget> createState() => _RecipeDetailState();
 }
 
-class _RecipeDetailState extends State<RecipeDetailRoute> {
+class _RecipeDetailState extends State<RecipeDetailScreen> {
   Recipe recipe = new Recipe();
   File imageFile;
   var isPhotoUploading = false;
   var isPhotoUpdated = false;
   var _progressValue = 0.0;
   var inCookingList = false;
+  final commentEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Recipe Detail')),
       body: Container(
         child: Column(
           children: <Widget>[
@@ -169,6 +170,7 @@ class _RecipeDetailState extends State<RecipeDetailRoute> {
                       ),
                       Positioned(
                         child: FloatingActionButton(
+                          heroTag: null,
                           onPressed: () {
                             _showPickerDialog(context);
                           },
@@ -252,16 +254,19 @@ class _RecipeDetailState extends State<RecipeDetailRoute> {
 
   Widget _decideImageView() {
     if (!isPhotoUpdated) {
-      return CachedNetworkImage(
-        fit: BoxFit.cover,
-        height: 100,
-        width: 100,
-        imageUrl: recipe.photo ?? "",
-        placeholder: (context, url) => Image.asset(
-          'assets/images/recipe_place_holder.jpg',
+      return Hero(
+        tag: widget.tag,
+        child: CachedNetworkImage(
+          fit: BoxFit.cover,
           height: 100,
           width: 100,
-          fit: BoxFit.cover,
+          imageUrl: recipe.photo ?? "",
+          placeholder: (context, url) => Image.asset(
+            'assets/images/recipe_place_holder.jpg',
+            height: 100,
+            width: 100,
+            fit: BoxFit.cover,
+          ),
         ),
       );
     } else if (imageFile != null) {
@@ -421,6 +426,39 @@ class _RecipeDetailState extends State<RecipeDetailRoute> {
     Navigator.of(context).pop();
 
     return imageFile;
+  }
+
+  addComment() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token') ?? '';
+    String url =
+        'http://35.160.197.175:3006/api/v1/recipe/${widget.recipeId}/comments';
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Authorization": token
+    };
+    final Map data = {'comment': commentEditingController.text};
+    final response = await http.post(url, headers: headers, body: json.encode(data));
+
+    if (response.statusCode == 200) {
+      commentEditingController.clear();
+      setState(() {
+        inCookingList = true;
+      });
+      Fluttertoast.showToast(
+        msg: ResMessage.fromJson(json.decode(response.body)).msg,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to load album');
+    }
   }
 
   addToCookingList() async {
@@ -672,6 +710,7 @@ class _RecipeDetailState extends State<RecipeDetailRoute> {
             child: Padding(
               padding: EdgeInsets.fromLTRB(12, 8, 12, 8),
               child: TextField(
+                controller: commentEditingController,
                 decoration: new InputDecoration.collapsed(
                   hintText: 'Add comment',
                   filled: true,
@@ -688,7 +727,9 @@ class _RecipeDetailState extends State<RecipeDetailRoute> {
               Icons.send,
               color: Colors.red,
             ),
-            onPressed: () {},
+            onPressed: () {
+              addComment();
+            },
           ),
         ],
       ),

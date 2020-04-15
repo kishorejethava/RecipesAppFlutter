@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:recipes_app_flutter/login/model/ResLogin.dart';
-import 'package:recipes_app_flutter/recipes/routes/RecipesRoute.dart';
+import 'package:recipes_app_flutter/recipes/routes/RecipesScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginWidget extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _LoginState();
 }
 
-class _LoginState extends State<LoginWidget> {
+class _LoginState extends State<LoginScreen> {
   final emailController = TextEditingController()..text = 'jm1@example.com';
   final passwordController = TextEditingController()..text = 'jay@123';
   final _formKey = GlobalKey<FormState>();
@@ -25,9 +25,9 @@ class _LoginState extends State<LoginWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      /* appBar: AppBar(
         title: Text('Login'),
-      ),
+      ), */
       body: Form(
           key: _formKey,
           child: Padding(
@@ -74,7 +74,7 @@ class _LoginState extends State<LoginWidget> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => RecipesRoute()),
+                                builder: (context) => RecipesScreen()),
                           );
                         });
                       }

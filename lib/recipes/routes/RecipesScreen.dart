@@ -7,16 +7,16 @@ import 'package:recipes_app_flutter/recipes/model/Recipe.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:recipes_app_flutter/recipes/model/RecipeList.dart';
-import 'package:recipes_app_flutter/recipes/routes/RecipeDetailRoute.dart';
+import 'package:recipes_app_flutter/recipes/routes/HomeRecipeDetailScreen.dart';
 import 'package:recipes_app_flutter/utils/model/ResMessage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class RecipesRoute extends StatefulWidget {
+class RecipesScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _RecipesRouteState();
 }
 
-class _RecipesRouteState extends State<RecipesRoute> with RouteAware {
+class _RecipesRouteState extends State<RecipesScreen> with RouteAware {
   List<Recipe> items = [];
 
   @override
@@ -196,22 +196,28 @@ class ListItem extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      RecipeDetailRoute(recipeId: recipe.recipeId)),
+                  builder: (context) => HomeRecipeDetailScreen(
+                        recipeId: recipe.recipeId,
+                        recipeName: recipe.name,
+                        tag: 'recipe$index',
+                      )),
             ).then((onValue) {});
           },
           child: Row(
             children: <Widget>[
-              CachedNetworkImage(
-                fit: BoxFit.cover,
-                height: 100,
-                width: 100,
-                imageUrl: recipe.photo ?? "",
-                placeholder: (context, url) => Image.asset(
-                  'assets/images/recipe_place_holder.jpg',
+              Hero(
+                tag: 'recipe$index',
+                child: CachedNetworkImage(
+                  fit: BoxFit.cover,
                   height: 100,
                   width: 100,
-                  fit: BoxFit.cover,
+                  imageUrl: recipe.photo ?? "",
+                  placeholder: (context, url) => Image.asset(
+                    'assets/images/recipe_place_holder.jpg',
+                    height: 100,
+                    width: 100,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               Flexible(
