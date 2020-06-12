@@ -1,16 +1,25 @@
-# recipes_app_flutter
+# Recipes App Flutter
 
-A new Flutter project.
+A Complete Recipes app in flutter. 
 
-## Getting Started
+<p float="left">
+  
+</p>
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<table style="border-collapse: collapse; border: none !important; background-color:#d4f3ef;">
+  <tr style="border: none;">
+  <td style="border: none;" align="center"><img src="/screenshots/device-2020-06-12-105758.png" width="300"></td>
+  <td style="border: none;" align="center"><img src="/screenshots/device-2020-06-12-103744.png" width="300"></td>
+  <td style="border: none;" align="center"><img src="/screenshots/device-2020-06-12-105942.png" width="300"></td>
+  <td style="border: none;" align="center"><img src="/screenshots/device-2020-06-12-110116.png" width="300"></td>
+ </tr>
+ </table>
+ 
+ <table>
+  <tr>
+  <td align="center"><img src="/screenshots/device-2020-06-12-105326.png" width="300"></td>
+  <td align="center"><img src="/screenshots/device-2020-06-12-104446.png" width="300"></td>
+  <td align="center"><img src="/screenshots/device-2020-06-12-104621.png" width="300"></td>
+  <td align="center"><img src="/screenshots/device-2020-06-12-104934.png" width="300"></td>
+ </tr>
+ </table>
